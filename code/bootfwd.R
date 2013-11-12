@@ -44,3 +44,41 @@ write.table(alpha, "results/treatments.txt",
 # usr.useful  0.32281658 0.0022746863 141.91696  0.000000e+00
 # usr.cool   -0.14840443 0.0020573980 -72.13209  0.000000e+00
 
+glmm <- c( 0.06188816, 0.14122226, 0.10260340, 0.32281658,-0.14840443)
+glms <- c(0.0017804125,0.0008198472,0.0004705413,0.0022746863,0.0020573980)
+names(glmm) <- names(glms) <- c("usr.stars","usr.count",
+								"usr.funny","usr.useful","usr.cool")
+alpha <- read.table("results/treatments.txt", sep="|", header=TRUE)
+
+g4raphi
+par(mfrow=c(1,5), mai=c(0.4,.4,0.2,0.2),omi=c(.2,.2,.1,0))
+for(d in colnames(alpha)){
+	hist(alpha[,d],col="grey60",border="grey90",breaks=4,
+		bty="n",ylab="",xlab="", main=d,freq=FALSE)
+}
+mtext("coefficient",side=1,font=3,outer=TRUE)
+mtext("density",side=2,font=3,outer=TRUE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
