@@ -40,10 +40,8 @@ saveRDS(ratings, file="data/ratings.rds",compress=FALSE)
 
 rev$days <- as.numeric(as.Date("2013-01-19")) - as.numeric(as.Date(rev$date))
 rev$days2 <- rev$days^2
-rev$stars.overusr <- rev$stars-usr[rev$user,'usr.stars']
-rev$stars.overbiz <- rev$stars-biz[rev$business,'biz.stars']
 
-rr <- scale(model.matrix( ~ stars + stars.overusr + stars.overbiz +
+rr <- scale(model.matrix( ~ stars +
 			(funny+useful+cool)*(days + days2), data=rev)[,-1])
 
 uu <- usr[rev$user,]
