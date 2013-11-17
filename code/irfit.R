@@ -5,11 +5,13 @@ source("code/setup.R")
 
 cat("starting fit\n")
 system.time({
-	fit <- dmr(counts=x, covars=V, mu=mu, cl=cl, 
+	fit <- dmr(cl=cl, covars=V, counts=x,  mu=mu,  
 			nlambda=20,
-			maxit=1e3,
 			gamma=1,
-			verb=TRUE,
+			verb=2,
+			maxit=500,
+			#lambda.min.ratio=1e-3,
+			#family="gaussian",
 			standardize=FALSE)})
 
 cat("done with fit\n")

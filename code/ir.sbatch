@@ -22,7 +22,9 @@ mkdir data/irout
 $para $srun "Rscript code/irfit.R {1} > $LD/r{1}.log" ::: {1..64}
 
 echo "combining results @" `date` >> $LOG
-
 Rscript code/irz.R > $LD/combine.log
+
+echo "running forward ols @" `date` >> $LOG
+Rscript code/inference.R > $LD/inference.log
 
 echo "done @" `date` >> $LOG

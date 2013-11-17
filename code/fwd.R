@@ -4,26 +4,25 @@ library(parallel)
 library(gamlr)
 
 system.time(source("code/zmvy.R"))
+Z <- Z[,yvar]
+colnames(Z) <- paste("z",colnames(Z),sep=".")
 X <- cBind(Z,M,V)
 
 source("code/drawoos.R")
 
 ## fit it
 system.time(
-	pof <- gamlr(X,Y,family="poisson",
-		lambda.min.ratio=1e-4,gamma=5,verb=TRUE,tol=1e-8))
-poB <- coef(pof)
-
-system.time(
 	lif <- gamlr(X,lY, doxx=TRUE, 
 			lambda.min.ratio=1e-4,gamma=1,verb=TRUE))
 liB <- coef(lif)
 
-save(poB,pof,liB,lif,
+save(liB,lif,
 	file="results/fwdfit.rda",compress=FALSE)
 
 loopit <- function(k){
   Z <- buildz(k)
+  Z <- Z[,yvar]
+  colnames(Z) <- paste("z",colnames(Z),sep=".")
   X <- cBind(Z,M,V)
 
   lo <- rando[(chunks[k]+1):chunks[k+1]]

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -N64
+#SBATCH -N32
 #SBATCH --job-name=ylpcv
 #SBATCH --output=logs/%j.err
 #SBATCH --constraint=ib

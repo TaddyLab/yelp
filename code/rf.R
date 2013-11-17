@@ -5,6 +5,8 @@ library(randomForest)
 library(Matrix)
 
 system.time(source("code/zmvy.R"))
+Z <- Z[,yvar]
+colnames(Z) <- paste("z",colnames(Z),sep=".")
 YX <- as.data.frame(as.matrix(cBind(lY,Z,M,V)))
 
 source("code/drawoos.R")
@@ -39,6 +41,8 @@ oos <- matrix(nrow=nfold, ncol=3,
 for(k in 1:nfold){
   ## build Z
   Z <- buildz(k)
+  Z <- Z[,yvar]
+  colnames(Z) <- paste("z",colnames(Z),sep=".")
   YX <- as.data.frame(as.matrix(cBind(lY,Z,M,V)))
 
   lo <- rando[(chunks[k]+1):chunks[k+1]]

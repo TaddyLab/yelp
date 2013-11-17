@@ -13,8 +13,6 @@ for(z in Sys.glob("data/irout/z*.rds")){
 	print(z)
 	print(system.time(Z <- Z + readRDS(z)))
 }
-cat("add m to Z\n")
-system.time(Z <- cBind(Z,m=exp(mu)-1))
 cat("save Z\n")
 system.time(
 	saveRDS(Z, file="results/Z.rds",compress=FALSE))

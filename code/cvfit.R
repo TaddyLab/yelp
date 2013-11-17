@@ -15,7 +15,8 @@ for(i in 1:nfold){
 			maxit=1e3,
 			gamma=1,
 			verb=TRUE,
-			standardize=FALSE)
+			standardize=FALSE,
+			family="gaussian")
 	beta <- coef(fit)
 	z <- tcrossprod(x,beta[ZKEEP,])
 	z@x <- z@x/(exp(mu[z@i+1])-1)

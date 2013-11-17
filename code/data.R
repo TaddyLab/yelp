@@ -61,8 +61,9 @@ V <- cBind(R,as(C[rev$business,],"dgCMatrix"))
 any(rownames(V)!=rownames(X))
 
 ## store V and mu
-mu <- log(rowSums(X)+1)
-save(V, mu, file="data/covars.rda", compress=FALSE)
+M <- rowSums(X)
+mu <- log(M+1)
+save(V, mu, M, file="data/covars.rda", compress=FALSE)
 saveRDS(X, file="data/x.rds", compress=FALSE)
 
 ## convert X to list and store

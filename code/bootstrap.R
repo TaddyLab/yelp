@@ -28,8 +28,8 @@ for(b in 1:B){
 	fix <- mu[ind]
 
 	fit <- dmr(cl=cl, counts=x, covars=v, mu=fix,  
-		nlambda=20, maxit=400, gamma=1,
-		standardize=FALSE)
+		nlambda=20, gamma=1, lambda.min.ratio=1e-3,
+		standardize=FALSE, family="gaussian")
 
 	phi <- coef(fit)
 	z <- tcrossprod(x,phi[zget,])

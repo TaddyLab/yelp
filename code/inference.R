@@ -1,58 +1,38 @@
 ## inference for the effect of review attributes.
 library(dmr)
 system.time(source("code/zmvy.R"))
-X <- cBind(Z,M,V)
+colnames(Z) <- paste("z",colnames(Z),sep=".")
+X <- as.data.frame(as.matrix(cBind(Z[,paste("z",yvar,sep=".")],M,V)))
 xsd <- apply(X,2,sd)
 ## get full Z
-Z <- readRDS("results/Z.rds")
-colnames(Z)[1:5] <- paste("z",colnames(Z)[1:5],sep=".")
-zX <- cBind(Z[,1:5],X)
-zX <- as.matrix(zX)
+zX <- as.data.frame(as.matrix(cBind(Z,M,V)))
 zxsd <- apply(zX,2,sd)
 
 ## fit it
-system.time(
-	pof <- gamlr(X,Y,family="poisson",
-		lambda.min.ratio=1e-4,gamma=5,verb=TRUE,tol=1e-8))
+flm <- glm(Y~., data=X, family="poisson")
+print(summary(flm)$coef[dvar,])
+zflm <- glm(Y~., data=zX, family="poisson")
+print(summary(zflm)$coef[dvar,])
 
-system.time(
-	lif <- gamlr(X,lY, doxx=TRUE, 
-			lambda.min.ratio=1e-4,gamma=1,verb=TRUE,tol=1e-8))
+fB <- coef(summary(flm))
+zfB <- coef(summary(zflm))
 
-zf <- gamlr(zX,Y,family="poisson",
-		lambda.min.ratio=1e-4,gamma=5,verb=TRUE)
-
-DX <- as.data.frame(as.matrix(zX))[,-(17:18)]
-zlm <- glm(Y~., data=DX, family="poisson")
 dvar <-c("usr.stars",
 	"usr.count","usr.funny",
 	"usr.useful","usr.cool")
-print(summary(zlm)$coef[dvar,])
-
-save(zf,pof,lif,zxsd,xsd,
-	file="results/fwdfit.rda",compress=FALSE)
 
 
-load("results/fwdfit.rda")
 
-B <- coef(pof,s=100)[-1,]*xsd
-zB <- coef(zf,s=100)[-1,]*zxsd
+save(fB,zfB,
+	file="results/wlsinference.rda",compress=FALSE)
 
-round(zB[zdrp],3)
-round(B[zdrp],3)
 
-# > round(zB[zdrp],3)
-#  usr.stars  usr.count  usr.funny usr.useful   usr.cool 
-#      0.061      0.141      0.103      0.319     -0.145 
-# > round(B[zdrp],3)
-#  usr.stars  usr.count  usr.funny usr.useful   usr.cool 
-#      0.061      0.148      0.104      0.328     -0.152 
-
-# usr.count                           0.1412222559 8.198472e-04 172.254360899
-# usr.funny                           0.1026034035 4.705413e-04 218.053981090
-# usr.useful                          0.3228165764 2.274686e-03 141.916962625
-# usr.cool                           -0.1484044257 2.057398e-03 -72.132094035
-
+## fit it
+# X <- cBind(Z[,paste("z",yvar,sep=".")],M,V)
+# xsd <- apply(X,2,sd)
+# system.time(
+# 	pof <- gamlr(,Y,family="poisson",
+# 		lambda.min.ratio=1e-4,gamma=5,verb=TRUE,tol=1e-8))
 # ### plot paths
 # fwd <- pof
 # fwd$beta <- fwd$beta*xsd

@@ -36,8 +36,7 @@ print(dim(x))
 
 ## hard path for logging from the snow cluster
 cat("\nstart cluster\n")
-where <- sprintf("/project/taddy/fresh/yelp/logs/%s-%s",
-				N,J)
+where <- sprintf("/project/taddy/fresh/yelp/logs/%s-%s", N,J)
 cl <- makeCluster(what,type="FORK",
 		outfile=sprintf("%s/snow%03d.log",where,k))
 print(cl)

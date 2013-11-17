@@ -2,17 +2,18 @@
 cat("\nread data...\n")
 
 Z <- readRDS("results/Z.rds")
-M <- Z[,'m'] 
-Z <- Z[,1:(ncol(Z)-1)]
 
 ## drops for pred
-zdrp <- c("usr.stars","usr.count","usr.funny","usr.useful","usr.cool")
-
-Z <- Z[,-which(colnames(Z)%in%zdrp)]
-print(colnames(Z))
+yvar <- c("funny","useful","cool",       
+ 	"funny:days","funny:days2","useful:days",
+ 	"useful:days2","cool:days","cool:days2")
+dvar <-c("usr.stars",
+	"usr.count","usr.funny",
+	"usr.useful","usr.cool")
+zget <- c(yvar,dvar)
 
 load("data/covars.rda")
-V <- V[,-which(colnames(V)%in%colnames(Z))]
+V <- V[,-which(colnames(V)%in%yvar)]
 
 ratings <- readRDS("data/ratings.rds")
 Y <- rowSums(ratings[,-1])
@@ -25,7 +26,6 @@ buildz <- function(k){
   for(z in Sys.glob(sprintf(
          "data/cvout/fold%03dz*.rds",k)))
 	Z <- Z + readRDS(z)
-  Z <- Z[,-which(colnames(Z)%in%zdrp)]
   print(colnames(Z))
   Z
 }

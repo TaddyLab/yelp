@@ -1,5 +1,35 @@
 ## plots and summary
 library(dmr)
+library(glmnet)
+net <- readRDS("results/net.rds")
+rfo <- read.table("results/rFoos.txt",
+        sep="|",header=TRUE)
+lio <- read.table("results/fwdoos.txt",
+        sep="|",header=TRUE)
+print(sd(rfo$mse)) ## tiny
+
+pdf(file="cv.pdf",width=7,height=4)
+par(mai=c(1,.8,.3,.2))
+plot(log(net$lambda), net$cvm, col=2, pch=16,
+  xlab="log lambda", ylab="mean squared error", 
+  ylim=range(c(net$cvm,rfo$mse,lio$mse)), bty="n")
+abline(h=mean(lio$mse),col="navy", lwd=2)
+abline(h=mean(rfo$mse),col="gold", lwd=2)
+legend("topleft", cex=1.2,
+  fill=c("red","navy","gold"), 
+  border="grey90",bty="n",
+  legend=c("Lasso (min mean R2=.460)",
+      "IR-linear (mean R2=.455)",
+      "IR-randomForest (mean R2=.520)"))
+dev.off()
+
+# > 1-min(net$cvm)/net$cvm[1]
+# [1] 0.4607141
+# > mean(lio$r2)
+# [1] 0.4552066
+# > mean(rfo$r2)
+# [1] 0.5205378
+
 load("data/covars.rda")
 
 B <- read.table("results/B.txt", 
@@ -71,33 +101,3 @@ plotpath('sex',
   c('funny','useful',"Lingerie", "Local Flavor", "Adult", "Bars"),
   c("cyan",3,4,2,"darkorange","purple"))
 dev.off()
-
-library(glmnet)
-net <- readRDS("results/net.rds")
-rfo <- read.table("results/rFoos.txt",
-        sep="|",header=TRUE)
-lio <- read.table("results/fwdoos.txt",
-        sep="|",header=TRUE)
-print(sd(rfo$mse)) ## tiny
-
-pdf(file="cv.pdf",width=7,height=4)
-par(mai=c(1,.8,.3,.2))
-plot(log(net$lambda), net$cvm, col=2, pch=16,
-  xlab="log lambda", ylab="mean squared error", 
-  ylim=range(c(net$cvm,rfo$mse,lio$mse)), bty="n")
-abline(h=mean(lio$mse),col="navy", lwd=2)
-abline(h=mean(rfo$mse),col="gold", lwd=2)
-legend("topleft", cex=1.2,
-  fill=c("red","navy","gold"), 
-  border="grey90",bty="n",
-  legend=c("Lasso (min mean R2=.460)",
-      "IR-linear (mean R2=.455)",
-      "IR-randomForest (mean R2=.520)"))
-dev.off()
-
-# > 1-min(net$cvm)/net$cvm[1]
-# [1] 0.4607141
-# > mean(lio$r2)
-# [1] 0.4552066
-# > mean(rfo$r2)
-# [1] 0.5205378
