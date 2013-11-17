@@ -18,16 +18,16 @@ abline(h=mean(rfo$mse),col="gold", lwd=2)
 legend("topleft", cex=1.2,
   fill=c("red","navy","gold"), 
   border="grey90",bty="n",
-  legend=c("Lasso (min mean R2=.460)",
+  legend=c("Lasso (min mean R2=.461)",
       "IR-linear (mean R2=.455)",
-      "IR-randomForest (mean R2=.520)"))
+      "IR-randomForest (mean R2=.521)"))
 dev.off()
 
-# > 1-min(net$cvm)/net$cvm[1]
+1-min(net$cvm)/net$cvm[1]
 # [1] 0.4607141
-# > mean(lio$r2)
+mean(lio$r2)
 # [1] 0.4552066
-# > mean(rfo$r2)
+mean(rfo$r2)
 # [1] 0.5205378
 
 load("data/covars.rda")
@@ -36,12 +36,25 @@ B <- read.table("results/B.txt",
   sep="|", header=FALSE,
   quote="", comment="",
   col.names=c("i","j","x"))
-B$i <- factor(B$i)
-B <- B[!is.na(B$i),]
+B$i <- factor(B$i,levels=rownames(wlsB))
 B[order(-abs(B$x))[1:20],]
 B <- sparseMatrix(i=as.numeric(B$i),
         j=as.numeric(B$j), x=B$x,
         dimnames=list(levels(B$i),levels(B$j)))
+
+> cor(Z[,'usr.count'],wlsZ[,'usr.count'])
+[1] 0.8954603
+> var <- "funny"
+> cor(Z[,var],wlsZ[,var])
+[1] 0.8706752
+> var <- "cool"
+> cor(Z[,var],wlsZ[,var])
+[1] 0.6769865
+> var <- "useful"
+> cor(Z[,var],wlsZ[,var])
+[1] 0.7898124
+> cor(c(as.matrix(B)),c(as.matrix(wlsB)))
+[1] 0.790685
 
 round(exp(B['funny',][order(-B['funny',])[1:16]]),2)
  #   dimsum     misir      rito      fart 
