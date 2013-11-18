@@ -38,15 +38,15 @@ plot(as.numeric(names(r)), r, type="l", lwd=2, cex.lab=1.4,
     bty="n", main="WLS vs Poisson beta")
 abline(v=-3,lty=2)
 par(mai=c(.6,.7,.2,.4))
-plot(c(poB),c(wlsB),col=rgb(0,0,0,.75), cex.lab=1.4,
+plot(c(poB),c(wlsB), cex.lab=1.4,
   pch=16,cex=.25, bty="n",
   xlab="Poisson beta", ylab="WLS beta")
 plot(c(poZ[,7:8]),c(wlsZ[,7:8]),cex.lab=1.4,
-  col=rep(c(rgb(0,1,1),rgb(0,1,0),rgb(0,0,1)),each=n), 
+  col=rep(c("turquoise","forestgreen"),each=n), 
   pch=16,cex=.25, bty="n", 
   xlim=c(-0.2,0.2),
   xlab="Poisson Z", ylab="WLS Z")
-legend("bottomright",fill=c("cyan",3,4),
+legend("bottomright",fill=c("turquoise","forestgreen"),
   border=FALSE,bty="n",legend=c("funny","useful"),cex=1.4)
 dev.off()
 
