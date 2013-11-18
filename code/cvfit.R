@@ -12,11 +12,11 @@ for(i in 1:nfold){
 			mu=mu[-lo], 
 			cl=cl, 
 			nlambda=20,
-			maxit=1e3,
 			gamma=1,
 			verb=TRUE,
 			standardize=FALSE,
-			family="gaussian")
+			family="gaussian",
+			zeta=0.05)
 	beta <- coef(fit)
 	z <- tcrossprod(x,beta[ZKEEP,])
 	z@x <- z@x/(exp(mu[z@i+1])-1)
