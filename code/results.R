@@ -1,5 +1,56 @@
 ## plots and summary
 library(dmr)
+wlsc <- read.table("results/wlscompare.txt",sep="|")
+r <- tapply(wlsc[,3],wlsc[,2],mean)
+
+load("data/covars.rda")
+X <- readRDS("data/x.rds")
+
+B <- read.table("results/poB.txt", 
+  sep="|", header=FALSE,
+  quote="", comment="",
+  col.names=c("i","j","x"))
+B$i <- factor(B$i,levels=c("intercept",colnames(V)))
+B$j <- factor(B$j,levels=colnames(X))
+poB <- as.matrix(sparseMatrix(i=as.numeric(B$i),
+        j=as.numeric(B$j), x=B$x,
+        dimnames=list(levels(B$i),levels(B$j))))
+
+B <- read.table("results/B.txt", 
+  sep="|", header=FALSE,
+  quote="", comment="",
+  col.names=c("i","j","x"))
+B$i <- factor(B$i,levels=c("intercept",colnames(V)))
+B$j <- factor(B$j,levels=colnames(X))
+wlsB <- as.matrix(sparseMatrix(i=as.numeric(B$i),
+        j=as.numeric(B$j), x=B$x,
+        dimnames=list(levels(B$i),levels(B$j))))
+
+poZ <- as.matrix(readRDS("results/poZ.rds"))
+wlsZ <- as.matrix(readRDS("results/Z.rds"))
+sapply(colnames(poZ),function(j) cor(poZ[,j],wlsZ[, j]))
+n <- nrow(poZ)
+
+png(file="wlscompare.png",width=9,height=2.8,units='in',res=300)
+par(mfrow=c(1,3),mai=c(.6,.7,.5,.4))
+plot(as.numeric(names(r)), r, type="l", lwd=2, cex.lab=1.4,
+    xlab="log zeta", ylab="correlation",
+    bty="n", main="WLS vs Poisson beta")
+abline(v=-3,lty=2)
+par(mai=c(.6,.7,.2,.4))
+plot(c(poB),c(wlsB),col=rgb(0,0,0,.75), cex.lab=1.4,
+  pch=16,cex=.25, bty="n",
+  xlab="Poisson beta", ylab="WLS beta")
+plot(c(poZ[,7:8]),c(wlsZ[,7:8]),cex.lab=1.4,
+  col=rep(c(rgb(0,1,1),rgb(0,1,0),rgb(0,0,1)),each=n), 
+  pch=16,cex=.25, bty="n", 
+  xlim=c(-0.2,0.2),
+  xlab="Poisson Z", ylab="WLS Z")
+legend("bottomright",fill=c("cyan",3,4),
+  border=FALSE,bty="n",legend=c("funny","useful"),cex=1.4)
+dev.off()
+
+
 library(glmnet)
 net <- readRDS("results/net.rds")
 rfo <- read.table("results/rFoos.txt",
@@ -30,7 +81,6 @@ mean(lio$r2)
 mean(rfo$r2)
 # [1] 0.5205378
 
-load("data/covars.rda")
 
 B <- read.table("results/B.txt", 
   sep="|", header=FALSE,
