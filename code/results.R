@@ -50,12 +50,12 @@ legend("bottomright",fill=c("turquoise","forestgreen"),
   border=FALSE,bty="n",legend=c("funny","useful"),cex=1.4)
 dev.off()
 
-
+library(dmr)
 library(glmnet)
 net <- readRDS("results/net.rds")
-rfo <- read.table("results/rFoos.txt",
+rfo <- read.table("results/PorFoos.txt",
         sep="|",header=TRUE)
-lio <- read.table("results/fwdoos.txt",
+lio <- read.table("results/Pofwdoos.txt",
         sep="|",header=TRUE)
 print(sd(rfo$mse)) ## tiny
 
@@ -66,20 +66,13 @@ plot(log(net$lambda), net$cvm, col=2, pch=16,
   ylim=range(c(net$cvm,rfo$mse,lio$mse)), bty="n")
 abline(h=mean(lio$mse),col="navy", lwd=2)
 abline(h=mean(rfo$mse),col="gold", lwd=2)
-legend("topleft", cex=1.2,
+legend("topleft", cex=1.1,
   fill=c("red","navy","gold"), 
   border="grey90",bty="n",
-  legend=c("Lasso (min mean R2=.461)",
-      "IR-linear (mean R2=.455)",
-      "IR-randomForest (mean R2=.521)"))
+  legend=c(sprintf("Lasso (min mean R2=%.3f)",1-min(net$cvm)/net$cvm[1]),
+      sprintf("IR-linear (mean R2=%.3f)",mean(lio$r2)),
+      sprintf("IR-randomForest (mean R2=%.3f)",mean(rfo$r2))))
 dev.off()
-
-1-min(net$cvm)/net$cvm[1]
-# [1] 0.4607141
-mean(lio$r2)
-# [1] 0.4552066
-mean(rfo$r2)
-# [1] 0.5205378
 
 
 B <- read.table("results/B.txt", 
