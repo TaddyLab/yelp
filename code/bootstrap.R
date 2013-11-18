@@ -29,7 +29,7 @@ for(b in 1:B){
 
 	fit <- dmr(cl=cl, counts=x, covars=v, mu=fix,  
 		nlambda=20, gamma=1, lambda.min.ratio=1e-3,
-		standardize=FALSE, family="gaussian")
+		standardize=FALSE, family="gaussian", zeta=0.05)
 
 	phi <- coef(fit)
 	z <- tcrossprod(x,phi[zget,])

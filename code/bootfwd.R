@@ -14,10 +14,8 @@ geteffects <- function(b){
 	require(gamlr)
 
 	Z <- 0
-	for(z in Sys.glob(sprintf("data/snowboot/z%03d-*.rds",b))){
-		print(z)
+	for(z in Sys.glob(sprintf("data/snowboot/z%03d-*.rds",b)))
 		Z <- Z + readRDS(z)
-	}
 	VMZ <- as.data.frame(as.matrix(cBind(V[BI[[b]],],M[BI[[b]]],Z)))
 	YI <- Y[BI[[b]]]
 	system.time(fwd <- glm(YI ~ ., data=VMZ, family="poisson"))

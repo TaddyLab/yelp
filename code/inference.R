@@ -24,7 +24,7 @@ dvar <-c("usr.stars",
 
 
 save(fB,zfB,
-	file="results/wlsinference.rda",compress=FALSE)
+	file="results/inference.rda",compress=FALSE)
 
 
 ## fit it

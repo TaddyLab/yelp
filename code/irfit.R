@@ -9,9 +9,10 @@ system.time({
 			nlambda=20,
 			gamma=1,
 			verb=2,
-			maxit=500,
-			#lambda.min.ratio=1e-3,
-			#family="gaussian",
+			#maxit=500,
+			zeta=0.05,
+			lambda.min.ratio=1e-3,
+			family="gaussian",
 			standardize=FALSE)})
 
 cat("done with fit\n")
