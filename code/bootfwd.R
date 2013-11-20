@@ -43,14 +43,14 @@ alpha <- read.table("results/treatments.txt", sep="|", header=TRUE)
 
 uncnd <- glm(Y ~ ., data=as.data.frame(as.matrix(V)), family="poisson")
 glmm <- coef(uncnd)[dvar]
-glms <- summary(uncnd)[dvar,2]
+glms <- coef(summary(uncnd))[dvar,2]
 names(glmm) <- names(glms) <- dvar
 
 pdf("graphs/boots.pdf",width=8,height=2)
 par(mfrow=c(1,5), mai=c(0.4,.4,0.2,0.2),omi=c(.2,.2,.1,0))
 for(d in colnames(alpha)){
-	hist(alpha[,d],col="grey60",border="grey90",breaks=4,
-		bty="n",ylab="",xlab="", main=d,freq=FALSE)
+	hist(alpha[,d],col="grey60",border="grey90",breaks=5,
+		bty="n",ylab="",xlab="", main=d,freq=FALSE,xlim=range(c(alpha[,d],glmm[d]+2*glms[d])))
 	polygon(x = glmm[d] + c(-2,-2,2,2)*glms[d], y=c(0,1e9,1e9,0), 
 		border=FALSE, col=rgb(255,165,0,150,max=255))
 }
