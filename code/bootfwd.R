@@ -5,8 +5,8 @@ V <- V[,-which(colnames(V)%in%yvar)]
 BI <- vector(length=B,mode="list")
 for(b in 1:B){
 	BI[[b]] <- sample.int(n,n,replace=TRUE)
-	cat(sprintf("%d: ", b))
-	print(BI[[b]][1:3])
+	#cat(sprintf("%d: ", b))
+	#print(BI[[b]][1:3])
 }
 
 geteffects <- function(b){
@@ -18,27 +18,33 @@ geteffects <- function(b){
 		Z <- Z + readRDS(z)
 	VMZ <- as.data.frame(as.matrix(cBind(V[BI[[b]],],M[BI[[b]]],Z)))
 	YI <- Y[BI[[b]]]
-	system.time(fwd <- glm(YI ~ ., data=VMZ, family="poisson"))
+	print(system.time(fwd <- glm(YI ~ ., data=VMZ, family="poisson")))
 	beta <- coef(fwd)
 	print(b)
 	return(beta[dvar])
 }
 
-cl <- makePSOCKcluster(16, outfile="data/snowboot/fwd.log")
-clusterExport(cl,c("V","M","Y","dvar","BI"))
+# cl <- makeForkCluster(16, outfile="logs/bootfwd.log")
+# clusterExport(cl,c("V","M","Y","dvar","BI"))
+# bi <- 1:B
+# alpha <- parLapply(cl,bi,geteffects)
+# stopCluster(cl)
+# alpha <- do.call(rbind,alpha)
 
-alpha <- parLapply(cl,1:B,geteffects)
-alpha <- do.call(rbind, alpha)
+alpha <- c()
+for(b in 1:B){
+ 	alpha <- rbind(alpha,geteffects(b))
+}
 
 write.table(alpha, "results/treatments.txt",
 	sep="|", row.names=FALSE,col.names=dvar,quote=FALSE)
 
 alpha <- read.table("results/treatments.txt", sep="|", header=TRUE)
 
-glmm <- c(0.0581505, 0.1448512, 0.1050877, 0.3363976,-0.1648610)
-glms <- c(0.0017694398,0.0008040118,0.0004546722,0.0022478543,0.0020281476)
-names(glmm) <- names(glms) <- 
-	c("usr.stars","usr.count","usr.funny","usr.useful","usr.cool")
+uncnd <- glm(Y ~ ., data=as.data.frame(as.matrix(V)), family="poisson")
+glmm <- coef(uncnd)[dvar]
+glms <- summary(uncnd)[dvar,2]
+names(glmm) <- names(glms) <- dvar
 
 pdf("graphs/boots.pdf",width=8,height=2)
 par(mfrow=c(1,5), mai=c(0.4,.4,0.2,0.2),omi=c(.2,.2,.1,0))
