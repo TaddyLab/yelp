@@ -56,10 +56,10 @@ bigs['days2'] <- bigs['days2']-.01
 pdf(file="fwd_paths.pdf",width=7,height=3.75)
 par(omi=c(0,1,0,0),mai=c(.9,0,0.1,1),xpd=NA)
 plot(fwd,col=col,df=FALSE,select=FALSE,yaxt="n",ylab="", font.main=1)
-axis(side=4)
+axis(side=4,las=1)
 text(x=rep(-7,length(bigs)),y=bigs,labels=names(bigs), 
 	font=3, col=col[names(bigs)], adj=1,cex=.8)
-mtext(side=4,"Beta*sd(x)",line=3,las=1)
+mtext(side=4,"Beta*sd(x)",line=3)
 dev.off()
 
 
