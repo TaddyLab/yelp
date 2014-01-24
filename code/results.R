@@ -85,21 +85,42 @@ B <- sparseMatrix(i=as.numeric(B$i),
         j=as.numeric(B$j), x=B$x,
         dimnames=list(levels(B$i),levels(B$j)))
 
-> cor(Z[,'usr.count'],wlsZ[,'usr.count'])
-[1] 0.8954603
-> var <- "funny"
-> cor(Z[,var],wlsZ[,var])
-[1] 0.8706752
-> var <- "cool"
-> cor(Z[,var],wlsZ[,var])
-[1] 0.6769865
-> var <- "useful"
-> cor(Z[,var],wlsZ[,var])
-[1] 0.7898124
-> cor(c(as.matrix(B)),c(as.matrix(wlsB)))
-[1] 0.790685
+# > cor(Z[,'usr.count'],wlsZ[,'usr.count'])
+# [1] 0.8954603
+# > var <- "funny"
+# > cor(Z[,var],wlsZ[,var])
+# [1] 0.8706752
+# > var <- "cool"
+# > cor(Z[,var],wlsZ[,var])
+# [1] 0.6769865
+# > var <- "useful"
+# > cor(Z[,var],wlsZ[,var])
+# [1] 0.7898124
+# > cor(c(as.matrix(B)),c(as.matrix(wlsB)))
+# [1] 0.790685
 
-round(exp(B['funny',][order(-B['funny',])[1:16]]),2)
+# $`scaled:scale`
+#        stars        funny       useful         cool         days        days2 
+# 1.216157e+00 1.874861e+00 2.238150e+00 1.949718e+00 5.233413e+02 1.036633e+06 
+#   funny:days  funny:days2  useful:days useful:days2    cool:days   cool:days2 
+# 2.446246e+03 3.822579e+06 2.685168e+03 4.117123e+06 2.391289e+03 3.661669e+06 
+
+B[c('funny','funny:days','funny:days2'),] <- 
+  B[c('funny','funny:days','funny:days2'),]/c(1.874861,2.446246e+03,3.822579e+06)
+
+B[c('useful','useful:days','useful:days2'),] <- 
+  B[c('useful','useful:days','useful:days2'),]/c(2.238150,2.685168e+03,4.117123e+06)
+
+B[c('cool','cool:days','cool:days2'),] <- 
+  B[c('cool','cool:days','cool:days2'),]/c(1.949718e+00,2.391289e+03,3.661669e+06)
+
+B['stars',] <- B['stars',]/1.216157
+
+
+vc <- 'stars'
+round(exp(B[vc,][order(-B[vc,])[1:6]]),2)
+round(exp(B[vc,][order(-B[vc,])[7:12]]),2)
+
  #   dimsum     misir      rito      fart 
  #     5.35      2.74      2.27      2.23
  #  prankst  porkwich  governor      bong
@@ -109,13 +130,13 @@ round(exp(B['funny',][order(-B['funny',])[1:16]]),2)
  #    thong      plot    safari metropoli 
  #     2.00      2.00      1.98      1.95 
 
-B[order(-abs(B[,'dimsum']))[1:10],'dimsum']
+B[c('funny','funny:days','funny:days2'),'dimsum']
 #      Chinese Asian Fusion cityChandler         cool   Vietnamese  
 #     9.448375    -4.657093     2.517415    -2.058031    -2.054590 
 #     cityMesa       Donuts        funny   funny:days  cityPhoenix 
 #     1.944427    -1.772237     1.677801    -1.537780     1.510298 
 
-B[order(-abs(B[,'misir']))[1:10],'misir']
+B[order(-abs(B[,'dimsum']))[1:10],'dimsum']
 
 tkn='dimsum'; B[order(-abs(B[,tkn]))[1:10],tkn]
 
