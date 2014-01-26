@@ -79,11 +79,41 @@ B <- read.table("results/B.txt",
   sep="|", header=FALSE,
   quote="", comment="",
   col.names=c("i","j","x"))
-B$i <- factor(B$i,levels=rownames(wlsB))
+B$i <- factor(B$i)#,levels=rownames(wlsB))
 B[order(-abs(B$x))[1:20],]
 B <- sparseMatrix(i=as.numeric(B$i),
         j=as.numeric(B$j), x=B$x,
         dimnames=list(levels(B$i),levels(B$j)))
+
+
+bigstar <- B["stars",order(-abs(B["stars",]))[1:40]]
+bigfun <- B["funny",order(-abs(B["funny",]))[1:40]]
+
+library(wordcloud)
+## we'll size the word proportional to its in-topic probability
+## and only show those with > 0.004 omega
+par(mfrow=c(1,2),omi=c(0,0,.8,0))
+wordcloud(names(bigstar), freq=abs(bigstar), ordered.colors=TRUE, col=1+(bigstar<0))
+mtext("stars",font=2,col=8, line=5, cex=3)
+wordcloud(names(bigfun), freq=abs(bigfun), ordered.colors=TRUE, col=1+(bigfun<0))
+mtext("funny",font=2,col=8, line=5, cex=3)
+
+x <- readRDS("data/x.rds")
+d <- colSums(x)
+names(d) <- colnames(x)
+bigs<-c('awesome','excellent','fantastic',
+  'favorite','bland','worst',
+  'love',
+  'yummy','awful','alway','overpric','hipst',
+  'groupon','jetta','!!!','atmosphere',
+  'shit','reasonab','fuck','god',
+  'support','variety','decent')
+#names(c(bigstar[1:20],bigfun[1:20]))
+col <- c("grey20","blue")[1+(B["cool",bigs]>0)]
+par(xpd=NA,mai=c(.8,.8,.1,.1))
+bigmat <- exp(as.matrix(t(B[c("stars","funny"), bigs])))
+plot(bigmat,bty="n",type="n",xlim=c(.55,1.8))
+text(bigmat,labels=bigs,cex=log(d[bigs])/10, col=col)
 
 # > cor(Z[,'usr.count'],wlsZ[,'usr.count'])
 # [1] 0.8954603
