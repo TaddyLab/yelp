@@ -1,7 +1,7 @@
 ## read for pred
 cat("\nread data...\n")
 
-Z <- readRDS("results/Z.rds")
+Z <- readRDS("results/poZ.rds")
 
 ## drops for pred
 yvar <- c("funny","useful","cool",       

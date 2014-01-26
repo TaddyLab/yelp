@@ -178,3 +178,84 @@ plotpath('sex',
   c('funny','useful',"Lingerie", "Local Flavor", "Adult", "Bars"),
   c("cyan",3,4,2,"darkorange","purple"))
 dev.off()
+
+
+
+library(textir)
+
+## drops for pred
+yvar <- c("funny","useful","cool",       
+  "funny:days","funny:days2","useful:days",
+  "useful:days2","cool:days","cool:days2")
+dvar <-c("usr.stars",
+  "usr.count","usr.funny",
+  "usr.useful","usr.cool")
+
+load("data/covars.rda")
+V <- V[,-which(colnames(V)%in%yvar)]
+V <- t(t(V)/sdev(V))
+
+ratings <- readRDS("data/ratings.rds")
+Y <- rowSums(ratings[,-1])
+lY <- log(Y+1)
+print(nobs <- length(Y))
+
+X <- cBind(M,V)
+
+
+fwd <- gamlr(X, Y, family="poisson", verb=TRUE, gamma=10, lambda.min.ratio=1e-4, scale=FALSE)
+B <- coef(fwd,s=100)[-1,]
+
+pdf(width=7,height=3,file="yelp_fwdgray.pdf")
+par(omi=c(0,.7,0,0),mai=c(1,0,0.1,1),xpd=NA)
+plot(fwd, col="grey50", select=FALSE,df=FALSE,yaxt="n",ylab="")
+axis(side=4)
+mtext(side=4,"Beta*sd(x)",line=3)
+dev.off()
+
+
+dvar <-c("usr.stars",
+  "usr.count","usr.funny",
+  "usr.useful","usr.cool")
+cols <- rep("grey50",ncol(X))
+names(cols) <- colnames(X)
+cols[dvar] <- c("gold","hotpink","green","red","blue")
+
+pdf(width=7,height=3,file="yelp_fwd.pdf")
+par(omi=c(0,.7,0,0),mai=c(1,0,0.1,1),xpd=NA)
+plot(fwd, col=cols, select=FALSE,df=FALSE,yaxt="n",ylab="")
+axis(side=4)
+mtext(side=4,"Beta*sd(x)",line=3)
+text(x=rep(-8,5),y=B[dvar],labels=dvar, 
+    font=3, col=cols[dvar], adj=1)
+dev.off()
+
+## fit it
+# X <- cBind(Z[,paste("z",yvar,sep=".")],M,V)
+# xsd <- apply(X,2,sd)
+# system.time(
+#   pof <- gamlr(,Y,family="poisson",
+#     lambda.min.ratio=1e-4,gamma=5,verb=TRUE,tol=1e-8))
+# ### plot paths
+# fwd <- pof
+# fwd$beta <- fwd$beta*xsd
+# bigs <- B[order(-abs(B))[1:12]]
+# col <- rep("grey70",length(B))
+# names(col) <- names(B)
+# col[names(bigs)] <- rainbow(length(bigs))
+# bigs['usr.count'] <- bigs['usr.count']-.01
+# bigs['usr.cool'] <- bigs['usr.cool']+.01
+# bigs['cool:days'] <- bigs['cool:days']-.04
+# bigs['M'] <- bigs['M']+.005
+# bigs['usr.funny'] <- bigs['usr.funny']-.02
+# pdf(file="fwd_paths.pdf",width=7,height=3.75)
+# par(omi=c(0,1,0,0),mai=c(1,0,0.1,1),xpd=NA)
+# plot(fwd,col=col,df=FALSE,select=FALSE,yaxt="n",ylab="", font.main=1)
+# axis(side=4)
+# text(x=rep(-8,length(bigs)),y=bigs,labels=names(bigs), 
+#   font=3, col=rainbow(length(bigs)), adj=1,cex=.8)
+# mtext(side=4,"Beta*sd(x)",line=3)
+# dev.off()
+
+
+
