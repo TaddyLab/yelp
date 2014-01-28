@@ -233,28 +233,19 @@ print(nobs <- length(Y))
 X <- cBind(M,V)
 
 
-fwd <- gamlr(X, Y, family="poisson", verb=TRUE, gamma=10, lambda.min.ratio=1e-4, scale=FALSE)
+fwd <- gamlr(X, Y, family="poisson", verb=TRUE, gamma=1/10, lambda.min.ratio=1e-4, scale=FALSE)
 B <- coef(fwd,s=100)[-1,]
 
-pdf(width=7,height=3,file="yelp_fwdgray.pdf")
-par(omi=c(0,.7,0,0),mai=c(1,0,0.1,1),xpd=NA)
-plot(fwd, col="grey50", select=FALSE,df=FALSE,yaxt="n",ylab="")
-axis(side=4)
-mtext(side=4,"Beta*sd(x)",line=3)
-dev.off()
-
-
-dvar <-c("usr.stars",
-  "usr.count","usr.funny",
-  "usr.useful","usr.cool")
 cols <- rep("grey50",ncol(X))
 names(cols) <- colnames(X)
 cols[dvar] <- c("gold","hotpink","green","red","blue")
 
-pdf(width=7,height=3,file="yelp_fwd.pdf")
-par(omi=c(0,.7,0,0),mai=c(1,0,0.1,1),xpd=NA)
-plot(fwd, col=cols, select=FALSE,df=FALSE,yaxt="n",ylab="")
+pdf(width=7,height=3.5,file="yelp_fwd.pdf")
+par(omi=c(0,.7,0,0),mai=c(1,0,0.4,1))
+plot(fwd, col=cols, select=FALSE,yaxt="n",ylab="")
 axis(side=4)
+abline(v=log(fwd$lambda)[which.min(BIC(fwd))],lty=2)
+par(xpd=NA)
 mtext(side=4,"Beta*sd(x)",line=3)
 text(x=rep(-8,5),y=B[dvar],labels=dvar, 
     font=3, col=cols[dvar], adj=1)
