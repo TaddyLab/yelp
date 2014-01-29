@@ -63,21 +63,16 @@ guntau <- function(b){
 	return(beta)
 } 
 
-#tau <- c()
-for(b in 16:B){
+tau <- c()
+for(b in 1:B){
 	tau <- c(tau, guntau(b))
 }
 
 taum <- matrix(tau)
-write.table(taum, "results/guntau.txt",
- 	sep="|", row.names=FALSE,col.names=FALSE,quote=FALSE)
+# write.table(taum, "results/guntau.txt",
+#  	sep="|", row.names=FALSE,col.names=FALSE,quote=FALSE)
 # stopCluster(cl)
 # alpha <- do.call(rbind,alpha)
-
-pa <- hist(rnorm(500,4))                     # centered at 4
-p2 <- hist(rnorm(500,6))                     # centered at 6
-plot( p1, col=rgb(0,0,1,1/4), xlim=c(0,10))  # first histogram
-plot( p2, col=rgb(1,0,0,1/4), xlim=c(0,10), add=T)  # second 
 
 # pdf("graphs/boots.pdf",width=8,height=2)
 # par(mfrow=c(1,5), mai=c(0.4,.4,0.2,0.2),omi=c(.2,.2,.1,0))
@@ -92,6 +87,35 @@ plot( p2, col=rgb(1,0,0,1/4), xlim=c(0,10), add=T)  # second
 # dev.off()
 
 
+
+alpha <- read.table("results/treatments.txt", sep="|", header=TRUE)[,'usr.count']
+tau <- read.table("results/tau.txt",header=FALSE)[,1]
+
+nb <- 5
+pe <- hist(tau,breaks=nb,plot=FALSE)
+pez <- hist(alpha,breaks=nb,plot=FALSE)
+de <- density(tau,adjust=1.5)
+dez <- density(alpha,adjust=1.5)
+
+yl <- c(0,max(pez$density,pe$density,de$y,dez$y))
+xl <- range(c(pez$breaks,pe$breaks,dez$x,dez$x))
+
+pdf("graphs/counteffect.pdf", width=6, height=3)
+par(mfrow=c(1,2), mai=c(0.5,.5,0.1,0.1),omi=c(.2,.2,.1,0))
+plot( pe, col="grey50",border="grey20",freq=FALSE, 
+	bty="n",ylab="",xlab="", main="", xlim=xl,ylim=yl)  
+plot( pez, col=rgb(255,165,0,150,max=255), border="grey20",freq=FALSE, add=T) 
+
+plot(de, col="grey10",lwd=2, type="l", 
+	bty="n",ylab="",xlab="", main="", xlim=xl,ylim=yl)
+lines( dez, col="darkorange", lwd=2) 
+
+mtext("1SD usr.count effect", side=1,font=3,outer=TRUE)
+mtext("bootstrap density", side=2,font=3,outer=TRUE)
+par(xpd=NA)
+legend(x=0.06,y=65, h=TRUE, bty="n", legend=c("with z", "without text"), 
+	lwd=4, col=c("darkorange","grey30"))
+dev.off()
 
 
 
