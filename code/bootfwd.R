@@ -100,6 +100,20 @@ dez <- density(alpha,adjust=1.5)
 yl <- c(0,max(pez$density,pe$density,de$y,dez$y))
 xl <- range(c(pez$breaks,pe$breaks,dez$x,dez$x))
 
+
+pdf("../bigtables/graphs/veteran.pdf", width=5, height=3)
+par(mai=c(0.5,.5,0.05,0),omi=c(.25,.25,0,0))
+plot( pe, col="grey50",border="grey20",freq=FALSE, 
+	bty="n",ylab="",xlab="", main="", xlim=xl,ylim=yl)  
+plot( pez, col=rgb(255,165,0,150,max=255), border="grey20",freq=FALSE, add=T) 
+
+mtext("1SD usr.count effect on log E[Y]", side=1,font=3,outer=TRUE)
+mtext("bootstrap density", side=2,font=3,outer=TRUE)
+par(xpd=NA)
+legend(x=0.1,y=55, bty="n", legend=c("with SP z", "without text"), 
+	lwd=4, col=c("darkorange","grey30"))
+dev.off()
+
 pdf("graphs/counteffect.pdf", width=6, height=3)
 par(mfrow=c(1,2), mai=c(0.5,.5,0.1,0.1),omi=c(.2,.2,.1,0))
 plot( pe, col="grey50",border="grey20",freq=FALSE, 
