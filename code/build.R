@@ -70,7 +70,12 @@ names(uid) <- rownames(rev)
 
 ## store the objects
 save(BIZ,CAT,GEO,REV,uid,m,n,file="data/meta.rda", compress=FALSE)
-saveRDS(X, file="data/text.rds", compress=FALSE)
+cat("BIZ:", round(object.size(BIZ)/1024^2,2),"Mb\n")
+cat("CAT:", round(object.size(CAT)/1024^2,2),"Mb\n")
+cat("GEO:", round(object.size(GEO)/1024^2,2),"Mb\n")
+cat("REV:", round(object.size(REV)/1024^2,2),"Mb\n")
+cat("uid:", round(object.size(uid)/1024^2,2),"Mb\n")
+cat("X:", round(object.size(X)/1024^2,2),"Mb\n")
 
 ## convert X to list and store in chunks
 N <- 128
@@ -79,13 +84,13 @@ system("mkdir data/x")
 p <- ncol(X)
 rownames(X) <- NULL
 chunks <- round(seq.int(0,p,length=N+1))
-print(chunks)
+cat(sprintf("writing x into %d parts ... ", N))
 for(i in 1:N){
 	x <- X[,(chunks[i]+1):chunks[i+1]]
 	attr(x, 'part') <- i
 	saveRDS(x, file=sprintf("data/x/part%03d.rds",i), compress=FALSE)
-	cat(i," ")
 }
+cat("done\n")
 
 
 

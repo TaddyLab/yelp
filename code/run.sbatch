@@ -22,7 +22,7 @@ export srun="srun --exclusive -N1 -c16 --ntasks=1"
 cp code/build.R $OUT-log/.
 cp code/$SLURM_JOB_NAME-*.R $OUT-log/.
 
-$para $srun "Rscript code/$SLURM_JOB_NAME-fit.R {1} > $OUT-log/r{1}.log" ::: {1..2}
+$para $srun "Rscript code/$SLURM_JOB_NAME-fit.R {1} > $OUT-log/r{1}.log" ::: {1..128}
 
 Rscript code/$SLURM_JOB_NAME-combine.R > $OUT-log/combine.log
 

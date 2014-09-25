@@ -28,7 +28,7 @@ x <- readRDS(sprintf("data/x/part%03d.rds",part))
 cat(sprintf("x from `%s' to `%s'\n",colnames(x)[1],tail(colnames(x),1)))
 
 load("data/meta.rda")
-v <- cBind(REV,GEO,CAT)#,BIZ)
+v <- cBind(REV,GEO,CAT,BIZ)
 cat(sprintf("v from `%s' to `%s'\n",colnames(v)[1],tail(colnames(v),1)))
 
 nobs <- nrow(v)
@@ -39,7 +39,7 @@ cat("\n starting fit\n")
 print(system.time({
 	fit <- dmr(cl=cl, 
 			covars=v, counts=x,  mu=log(m),  
-			gamma=10,verb=2,
+			gamma=2,verb=2,
 			standardize=FALSE)}))
 
 cat("done with fit\n")
