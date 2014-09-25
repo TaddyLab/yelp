@@ -28,7 +28,7 @@ x <- readRDS(sprintf("data/x/part%03d.rds",part))
 cat(sprintf("x from `%s' to `%s'\n",colnames(x)[1],tail(colnames(x),1)))
 
 load("data/meta.rda")
-v <- cBind(REV,GEO,CAT,BIZ)
+v <- cBind(REV,GEO,CAT)#,BIZ)
 cat(sprintf("v from `%s' to `%s'\n",colnames(v)[1],tail(colnames(v),1)))
 
 nobs <- nrow(v)
@@ -40,7 +40,6 @@ print(system.time({
 	fit <- dmr(cl=cl, 
 			covars=v, counts=x,  mu=log(m),  
 			gamma=10,verb=2,
-			lambda.min.ratio=1e-3,
 			standardize=FALSE)}))
 
 cat("done with fit\n")
@@ -49,15 +48,13 @@ stopCluster(cl)
 saveRDS(fit, file=sprintf("%s-data/fit%03d.rds",where,part), compress=FALSE)
 
 cat("\nextracting coef as table\n")
-system.time({
-	beta <- coef(fit)
-	b <- summary(beta)
-	b$j <- colnames(beta)[b$j]
-	b$i <- rownames(beta)[b$i]
-	write.table(b,
-        file=sprintf("%s-data/b%03d.txt",where,part),
-        row.names=FALSE,col.names=FALSE,sep="|",quote=FALSE)
-})
+beta <- coef(fit)
+b <- summary(beta)
+b$j <- colnames(beta)[b$j]
+b$i <- rownames(beta)[b$i]
+write.table(b,
+    file=sprintf("%s-data/b%03d.txt",where,part),
+    row.names=FALSE,col.names=FALSE,sep="|",quote=FALSE)
 cat(sprintf("%.1f%% nonzero\n", mean(beta[-1,]!=0)*100 ))
 
 cat("\nprojecting z\n")
