@@ -10,6 +10,7 @@ library(distrom)
 
 args <- commandArgs(TRUE)
 part <- as.integer(args[1])
+penweight <- as.numeric(args[2])
 I <- Sys.getenv("SLURM_JOBID")
 J <- Sys.getenv("SLURM_JOB_NAME")
 
@@ -28,19 +29,17 @@ x <- readRDS(sprintf("data/x/part%03d.rds",part))
 cat(sprintf("x from `%s' to `%s'\n",colnames(x)[1],tail(colnames(x),1)))
 
 load("data/meta.rda")
-v <- cBind(REV,GEO,CAT,BIZ)
+v <- cBind(REV,CAT,GEO,BIZ)
+d <- ncol(v)
+drev <- ncol(REV)
 cat(sprintf("v from `%s' to `%s'\n",colnames(v)[1],tail(colnames(v),1)))
-
-nobs <- nrow(v)
-nvar <- ncol(v)
-nwrd <- ncol(x)
 
 cat("\n starting fit\n")
 print(system.time({
 	fit <- dmr(cl=cl, 
-			covars=v, counts=x,  mu=log(m),  
-			gamma=2,verb=2,
-			standardize=FALSE)}))
+			covars=v, counts=x,  mu=log(m), 
+			varweight=c(rep(1,drev),rep(1/penweight,d-drev)), 
+			gamma=1,standardize=FALSE)}))
 
 cat("done with fit\n")
 stopCluster(cl) 
@@ -48,7 +47,7 @@ stopCluster(cl)
 saveRDS(fit, file=sprintf("%s-data/fit%03d.rds",where,part), compress=FALSE)
 
 cat("\nextracting coef as table\n")
-beta <- coef(fit)
+beta <- coef(fit)[c(colnames(REV),colnames(CAT)),]
 b <- summary(beta)
 b$j <- colnames(beta)[b$j]
 b$i <- rownames(beta)[b$i]
@@ -62,7 +61,7 @@ system.time({
 	z <- tcrossprod(x,beta[colnames(REV),])
 	print(colnames(z))
 	z@x <- z@x/(m[z@i+1]-1)
-	saveRDS(z, file=sprintf("%s-data/z%03d.txt",where,part), compress=FALSE)
+	saveRDS(z, file=sprintf("%s-data/z%03d.rds",where,part), compress=FALSE)
 })
 
 cat("warnings:\n")
