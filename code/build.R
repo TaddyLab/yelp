@@ -87,9 +87,14 @@ chunks <- round(seq.int(0,p,length=N+1))
 cat(sprintf("writing x into %d parts ... ", N))
 for(i in 1:N){
 	x <- X[,(chunks[i]+1):chunks[i+1]]
+	words <- cbind(
+		rep(sprintf("%03d",i),ncol(x)), colnames(x))
+	write.table(words,sep="|",quote=FALSE,
+		row.names=FALSE,col.names=FALSE,append=TRUE)
 	attr(x, 'part') <- i
 	saveRDS(x, file=sprintf("data/x/part%03d.rds",i), compress=FALSE)
 }
+
 cat("done\n")
 
 
