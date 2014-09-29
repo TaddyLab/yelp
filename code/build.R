@@ -33,6 +33,7 @@ m <- rowSums(X)
 X <- X[m>0,]
 rev <- rev[m>0,]
 m <- m[m>0]
+saveRDS(X,file="data/text.rds",compress=FALSE)
 
 ## Construct Covariates
 age <- as.numeric(as.Date("2013-01-19")) - as.numeric(as.Date(rev$date))
