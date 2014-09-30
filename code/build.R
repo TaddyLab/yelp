@@ -54,6 +54,7 @@ rownames(CAT) <- NULL
 
 GEO <- sparseMatrix(i=1:n, j=as.numeric(biz[bid,"city"]),x=rep(1,n),
 		dimnames=list(NULL, city=levels(biz$city)))
+usr.rank <- ave(age, uid, FUN=function(x) rank(x, ties.method="min"))
 
 REV <- scale(data.frame( 
 		funny = rev$funny/sqrt(age),
@@ -64,8 +65,9 @@ REV <- scale(data.frame(
  		usr.useful = usr[uid,"usr.useful"]/usr[uid,"usr.count"],
  		usr.cool = usr[uid,"usr.cool"]/usr[uid,"usr.count"],
  		usr.stars = usr[uid,"usr.stars"]-3.75,
- 		usr.count = usr[uid,"usr.count"]-ave(age, uid, FUN=rank),
- 		biz.stars = biz[bid,"biz.stars"]-3.75,
+ 		usr.count = usr[uid,"usr.count"]-usr.rank,
+ 		usr.rank = usr.rank,
+  		biz.stars = biz[bid,"biz.stars"]-3.75,
  		biz.count = biz[bid,"biz.count"]))
 names(uid) <- rownames(rev)
 
@@ -90,8 +92,6 @@ for(i in 1:N){
 	x <- X[,(chunks[i]+1):chunks[i+1]]
 	words <- cbind(
 		rep(sprintf("%03d",i),ncol(x)), colnames(x))
-	write.table(words,sep="|",quote=FALSE,
-		row.names=FALSE,col.names=FALSE,append=TRUE)
 	attr(x, 'part') <- i
 	saveRDS(x, file=sprintf("data/x/part%03d.rds",i), compress=FALSE)
 }

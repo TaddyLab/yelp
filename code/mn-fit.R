@@ -59,7 +59,6 @@ cat("\nprojecting z\n")
 system.time({ 
 	z <- tcrossprod(x,beta[colnames(REV),])
 	print(colnames(z))
-	z@x <- z@x/(m[z@i+1]-1)
 	saveRDS(z, file=sprintf("%s-data/z%03d.rds",where,part), compress=FALSE)
 })
 
