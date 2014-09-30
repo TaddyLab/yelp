@@ -83,9 +83,6 @@ for(i in 1:nrow(W)){
 pw <- 20
 
 z <- read.table(sprintf("results/mn%d/z.txt",pw),sep="|",header=TRUE)
-# z <- z*m
-# z[z==Inf] <- 0
-# z[z==-Inf] <- 0
 cc <- cbind( cor(REV[,var]), cor(z[,var]) )
 fancy <- function(c){
 	if(abs(c)<0.05) return("")
