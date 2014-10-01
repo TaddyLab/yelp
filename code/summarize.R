@@ -114,15 +114,13 @@ d <- as.matrix(data.frame(d=log(round(
 	REV[,"usr.count"]*attributes(REV)$`scaled:scale`["usr.count"]+
 		attributes(REV)$`scaled:center`["usr.count"])+1)))
 mrg <- gamlr(d,y)
-coef(mrg)["d",]
-# [1] 0.003216478
+print(coef(mrg)["d",])
 
 r <- REV[,!colnames(REV)%in%c("stars","usr.count")]/2
 x <- cBind(r,CAT,GEO,BIZ)
 
 notext <- gamlr(cBind(d,x),y,free=1+1:ncol(x),gamma=10)
-coef(notext)["d",]
-# [1] 0.01210891
+print(coef(notext)["d",])
 
 xz <- cBind(x,as.matrix(z[,c("stars","usr.count")]),
 	cBind(r,CAT)*z$stars,cBind(r,CAT)*z$usr.count)
@@ -131,8 +129,8 @@ xz <- cBind(x,as.matrix(z[,c("stars","usr.count")]),
 # vs 11938 + 13938*(1+342) = 4792672 (approx 5 million).
 
 withtext <- gamlr(cBind(d,xz),y,free=1+1:ncol(xz),gamma=10)
-coef(withtext)["d",]
-# [1] 0.02032455
+print(coef(withtext)["d",])
+
 
 
 

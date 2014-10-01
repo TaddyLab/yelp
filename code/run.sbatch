@@ -6,7 +6,7 @@
 #SBATCH --constraint=ib
 #SBATCH --exclusive
 
-PENWEIGHT=10 # this controls weight of penalty on variables of interest vs controls
+PENWEIGHT=200 # this controls weight of penalty on variables of interest vs controls
 
 module load parallel
 
