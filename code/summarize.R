@@ -99,9 +99,10 @@ for(i in 1:4){
 	 cat("\\\\\n")
 }
 
-lm <- m<50
-zm <- z[lm,]
+lm <- m>50&m<100
 um <- uid[lm]
+
+zm <- z[lm,]
 names(um)[order(-zm$funny)[1:3]]
 names(um)[order(-zm$useful)[1:3]]
 names(um)[order(-zm$cool)[1:3]]
