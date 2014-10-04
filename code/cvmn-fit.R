@@ -11,6 +11,7 @@ library(distrom)
 args <- commandArgs(TRUE)
 part <- as.integer(args[1])
 penweight <- as.numeric(args[2])
+
 J <- Sys.getenv("SLURM_JOB_NAME")
 
 cat(sprintf("%s chunk %03d\n",J,part))
@@ -24,43 +25,33 @@ where <- sprintf("/project/taddy/yelp/results/%s",J)
 cl <- makeCluster(what,type="FORK",outfile=sprintf("%s/log/snow%03d.log",where,part))
 print(cl)
 
-x <- readRDS(sprintf("data/x/part%03d.rds",part))
+x <- readRDS(sprintf("data/x/part%03d.rds",part))[,1:16]
 cat(sprintf("x from `%s' to `%s'\n",colnames(x)[1],tail(colnames(x),1)))
 
 load("data/meta.rda")
 v <- cBind(REV,CAT,GEO,BIZ)
+n <- nrow(v)
 d <- ncol(v)
 drev <- ncol(REV)
 cat(sprintf("v from `%s' to `%s'\n",colnames(v)[1],tail(colnames(v),1)))
 
-cat("\n starting fit\n")
-print(system.time({
-	fit <- dmr(cl=cl, covars=v, counts=x,  mu=log(m), 
-			lambda.min.ratio=1e-3,
+K <- 5
+foldid <- rep(1:K,each=ceiling(n/K))[1:n]
+cat(sprintf("running %d fold CV\n",K))
+
+for(thisfold in 1:K){
+	train <- which(foldid != thisfold)
+
+	fit <- dmr(cl=cl, covars=v[train,], counts=x[train,],  mu=log(m[train]), 
 			varweight=c(rep(1,drev),rep(1/penweight,d-drev)), 
-			gamma=1,standardize=FALSE)}))
+			gamma=1,standardize=FALSE)
 
-cat("done with fit\n")
+	z <- tcrossprod(x,coef(fit)[c("funny","useful","cool","stars"),])
+	saveRDS(z, file=sprintf("%s/data/z%d-%03d.rds",where,thisfold,part), compress=FALSE)
+	print(thisfold)
+}
+
 stopCluster(cl) 
-
-saveRDS(fit, file=sprintf("%s/data/fit%03d.rds",where,part), compress=FALSE)
-
-cat("\nextracting coef as table\n")
-beta <- coef(fit)[c(colnames(REV),colnames(CAT)),]
-b <- summary(beta)
-b$j <- colnames(beta)[b$j]
-b$i <- rownames(beta)[b$i]
-write.table(b,
-    file=sprintf("%s/data/b%03d.txt",where,part),
-    row.names=FALSE,col.names=FALSE,sep="|",quote=FALSE)
-cat(sprintf("%.1f%% nonzero\n", mean(beta[-1,]!=0)*100 ))
-
-cat("\nprojecting z\n")
-system.time({ 
-	z <- tcrossprod(x,beta[colnames(REV),])
-	print(colnames(z))
-	saveRDS(z, file=sprintf("%s/data/z%03d.rds",where,part), compress=FALSE)
-})
 
 cat("warnings:\n")
 warnings()

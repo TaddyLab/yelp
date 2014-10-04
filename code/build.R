@@ -66,7 +66,6 @@ REV <- scale(data.frame(
  		usr.cool = usr[uid,"usr.cool"]/usr[uid,"usr.count"],
  		usr.stars = usr[uid,"usr.stars"]-3.75,
  		usr.count = usr[uid,"usr.count"]-usr.rank,
- 		usr.rank = usr.rank,
   		biz.stars = biz[bid,"biz.stars"]-3.75,
  		biz.count = biz[bid,"biz.count"]))
 names(uid) <- rownames(rev)
@@ -81,7 +80,7 @@ cat("uid:", round(object.size(uid)/1024^2,2),"Mb\n")
 cat("X:", round(object.size(X)/1024^2,2),"Mb\n")
 
 ## convert X to list and store in chunks
-N <- 128
+N <- 256 # needs to match run.sbatch the parallel loop in run.sbatch
 system("rm -rf data/x/")
 system("mkdir data/x")
 p <- ncol(X)

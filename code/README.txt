@@ -12,5 +12,5 @@ Python run tokenize.py to extract from the original json files into text tables.
 
 *Regression*
 
-The R files are all designed to run in a slurm environment. For example, `code/run.sbatch -Jmn’ will execute a distributed run for code/mn-fit.R and call the combiner code/mn-combine.R, writing coefficients and projections to results/mn.  Details depend upon your computing setup.
+The R files are all designed to run in a slurm environment. For example, `code/run.sbatch -Jmn’ will run code/build.R, then execute a distributed run for code/mn-fit.R and call the combiner code/mn-combine.R, writing coefficients and projections to results/mn.  Details depend upon your computing setup.
 
