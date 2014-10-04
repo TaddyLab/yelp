@@ -66,7 +66,6 @@ REV <- scale(data.frame(
  		usr.cool = usr[uid,"usr.cool"]/usr[uid,"usr.count"],
  		usr.stars = usr[uid,"usr.stars"]-3.75,
  		usr.count = usr[uid,"usr.count"]-usr.rank,
- 		usr.rank = usr.rank,
   		biz.stars = biz[bid,"biz.stars"]-3.75,
  		biz.count = biz[bid,"biz.count"]))
 names(uid) <- rownames(rev)
