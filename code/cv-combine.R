@@ -1,4 +1,6 @@
 ## read the worker ouput and sum
+J <- Sys.getenv("SLURM_JOB_NAME")
+
 library(methods)
 library(lattice)
 library(Matrix)
@@ -6,7 +8,6 @@ library(gamlr)
 
 cat(sprintf("combining @ %s\n",date()))
 
-J <- Sys.getenv("SLURM_JOB_NAME")
 foldid <- readRDS(sprintf("results/%s/data/foldid.rds",J))
 K <- max(foldid)
 
@@ -21,40 +22,49 @@ for(k in 1:K){
 
 cat(sprintf("predicting @ %s\n",date()))
 
-
 library(distrom)
 load("data/meta.rda")
 votes <- c("funny","useful","cool")
 X <- cBind(REV[,!colnames(REV)%in%votes],CAT,GEO,BIZ,m)
 dtm <- readRDS("data/text.rds")
-y <- log(rowSums(REV[,votes])*attributes(REV)$`scaled:scale`[votes]+
-		attributes(REV)$`scaled:center`[votes]+1)
+Xdtm <- cBind(X,dtm)
 
-mse <- c()
+r2 <- as.data.frame(matrix(nrow=K,ncol=6,
+	dimnames=list(1:K,
+		paste(rep(votes,each=2),c("dtm","z"),sep="."))))
 for(k in 1:K){
-	train <- which(foldid==k)
-	z <- rowSums(read.table(
+	train <- which(foldid!=k)
+	Z <- as.matrix(read.table(
 		sprintf("results/%s/z%d.txt",J,k),
 		header=TRUE,sep="|")[,votes])
+	r2k <- c()
+	for(v in votes){
+		y <- REV[,v]
+		vary <- var(y[-train])
+		z <- Z[,v]
+		Xz <- cBind(X,z)
 
-	linraw <- gamlr(x=cBind(X,dtm)[train,],y=y[train])
-	linz <- gamlr(x=cBind(X,z)[train,],y=y[train])
-	linz2 <- gamlr(x=cBind(X,z,X*z)[train,],y=y[train])
+		fitdtm <- gamlr(x=Xdtm[train,],y=y[train],lambda.min.ratio=1e-3)		
+		fitz <- gamlr(x=Xz[train,],y=y[train],lambda.min.ratio=1e-3)
 
-	yhatlraw <- predict(linraw, cBind(X,dtm)[-train,])[,1]
-	yhatlz <- predict(linz, cBind(X,z)[-train,])[,1]
-	yhatlz2 <- predict(linz2, cBind(X,z,X*z)[-train,])[,1]
+		edtm <- predict(fitdtm, Xdtm[-train,])[,1]-y[-train]
+		ez <- predict(fitz, Xz[-train,])[,1]-y[-train]
 
-	mse <- rbind(mse,
-		matrix(c(var(yhatlraw-y[-train]),
-				var(yhatlz-y[-train]),
-				var(yhatlz2-y[-train])), 
-			nrow=1))
-	print(k)
+		r2k <- c(r2k, 
+			1 - c(var(edtm),var(ez))/vary)
+		cat(k,v,"\n")
+	}
+	r2[k,] <- r2k
 }
-colnames(mse) <- c("full text","z","z2")
-write.table(mse, file=sprintf("results/%s/mse.txt",J),
-		row.name=FALSE, sep="|")
+write.table(r2, file=sprintf("results/%s/r2.txt",J),
+			row.name=FALSE, sep="|")
+print(round(colMeans(r2),3))
+
+pdf(sprintf("results/%s/egfwdfits.pdf",J),width=8,height=5)
+par(mfrow=c(1,2))
+plot(fitdtm, main="DTM")
+plot(fitz, main="Z")
+dev.off()
 
 cat(sprintf("done @ %s\n",date()))
 
