@@ -7,18 +7,19 @@
 #SBATCH --constraint=ib
 #SBATCH --exclusive
 
-SCRIPT="cvmn" # this determines the *-fit and *-combine scripts used
+SCRIPT="cv" # this determines the *-fit and *-combine scripts used
 PENWEIGHT=20 # this controls weight of penalty on variables of interest vs controls
 
 module load parallel
 
 OUT=results/$SLURM_JOB_NAME
+LOG=$OUT/log/an_sbatch.log
+
 mkdir -p $OUT
 rm -rf $OUT
 mkdir -p $OUT/data
 mkdir -p $OUT/log
 
-LOG=$OUT/log/an_sbatch.log
 echo `date` > $LOG
 echo "jobid $SLURM_JOBID running $SCRIPT" >> $LOG
 echo "$SLURM_NNODES nodes" >> $LOG

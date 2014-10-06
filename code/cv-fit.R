@@ -25,7 +25,7 @@ where <- sprintf("/project/taddy/yelp/results/%s",J)
 cl <- makeCluster(what,type="FORK",outfile=sprintf("%s/log/snow%03d.log",where,part))
 print(cl)
 
-x <- readRDS(sprintf("data/x/part%03d.rds",part))[,1:16]
+x <- readRDS(sprintf("data/x/part%03d.rds",part))
 cat(sprintf("x from `%s' to `%s'\n",colnames(x)[1],tail(colnames(x),1)))
 
 load("data/meta.rda")
@@ -37,6 +37,8 @@ cat(sprintf("v from `%s' to `%s'\n",colnames(v)[1],tail(colnames(v),1)))
 
 K <- 5
 foldid <- rep(1:K,each=ceiling(n/K))[1:n]
+saveRDS(foldid,file=sprintf("%s/data/foldid.rds",where),compress=FALSE)
+
 cat(sprintf("running %d fold CV\n",K))
 
 for(thisfold in 1:K){
