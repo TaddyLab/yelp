@@ -36,7 +36,8 @@ cat(sprintf("v from `%s' to `%s'\n",colnames(v)[1],tail(colnames(v),1)))
 cat("\n starting fit\n")
 print(system.time({
 	fit <- dmr(cl=cl, covars=v, counts=x,  mu=log(m), 
-			lambda.min.ratio=1e-3,
+			lambda.min.ratio=1e-3, # takes longer, but more complete search 
+			# maxit=1e3, # (limiting maxit can be a big speedup) 
 			varweight=c(rep(1,drev),rep(1/penweight,d-drev)), 
 			gamma=1,standardize=FALSE)}))
 

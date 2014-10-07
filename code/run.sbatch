@@ -7,7 +7,7 @@
 #SBATCH --constraint=ib
 #SBATCH --exclusive
 
-SCRIPT="cv" # this determines the *-fit and *-combine scripts used
+SCRIPT="mn" # this determines the *-fit and *-combine scripts used
 PENWEIGHT=20 # this controls weight of penalty on variables of interest vs controls
 
 module load parallel
